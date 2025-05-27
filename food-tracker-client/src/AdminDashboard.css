@@ -1,0 +1,56 @@
+.admin-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #ffffffc9;
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  font-family: "Inter", sans-serif;
+}
+
+.admin-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #146c50;
+  margin-bottom: 24px;
+}
+
+.admin-message {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #444;
+  font-weight: 500;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-table th {
+  background: #f0f0f0;
+  font-weight: 600;
+  color: #444;
+}
+
+.admin-table button {
+  padding: 6px 10px;
+  background: #e74c3c;
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-table button:hover {
+  background: #c0392b;
+}

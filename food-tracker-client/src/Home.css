@@ -1,0 +1,142 @@
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Анимация появления */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Главный контейнер */
+.home-container {
+  max-width: 600px;
+  margin: auto;
+  padding-top: 80px;
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 40px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  color: #333;
+  animation: fadeSlideIn 0.7s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.home-title {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.home-title span {
+  color: #76b39d;
+}
+
+.home-subtitle {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 50px;
+}
+
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.home-button {
+  background: linear-gradient(to right, #90c9b2, #76b39d);
+  border: none;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.home-button:hover {
+  background-color: #7dbfa5;
+  transform: scale(1.03);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 480px) {
+  .home-button {
+    font-size: 16px;
+    padding: 12px 20px;
+  }
+
+  .home-title {
+    font-size: 28px;
+  }
+
+  .home-subtitle {
+    font-size: 16px;
+  }
+}
+
+/* Заголовок и логотип */
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0px;
+  margin-bottom: 20px;
+  animation: fadeInUp 0.7s ease-in-out;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.home-logo-inline {
+  width: 120px;
+  height: auto;
+  margin-bottom: 10px;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+}
+
+.home-logo-inline:hover {
+  transform: scale(1.05);
+}
+
+.home-title-inline {
+  font-size: 36px;
+  font-weight: 700;
+  color: #207c65;
+  letter-spacing: 1.2px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin-left: 12px;
+}

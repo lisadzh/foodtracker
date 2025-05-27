@@ -1,0 +1,78 @@
+.navbar {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 14px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-links li a,
+.navbar-links li button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #207c65;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.navbar-links li a:hover,
+.navbar-links li button:hover {
+  background-color: #e3f2ed;
+  box-shadow: 0 0 0 3px rgba(144, 201, 178, 0.25);
+}
+
+.navbar-links li.active a {
+  background-color: #90c9b2;
+  color: white;
+  box-shadow: 0 0 0 3px rgba(144, 201, 178, 0.4);
+}
+
+.logout-btn {
+  background: linear-gradient(to right, #90c9b2, #76b39d);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.logout-btn:hover {
+  background-color: #7dbfa5;
+  transform: scale(1.03);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 600px) {
+  .navbar-links {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .navbar-links li a,
+  .navbar-links li button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+}

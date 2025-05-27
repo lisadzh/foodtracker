@@ -1,0 +1,216 @@
+/* Анімація появи */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Контейнер сторінки */
+.stats-container {
+  max-width: 900px;
+  margin: auto;
+  margin-top: 0;
+  background-color: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.7s ease-in-out;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Заголовок */
+.page-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #207c65;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Графіки */
+.chart-section {
+  margin-top: 40px;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  animation: fadeInUp 0.5s ease-in-out;
+}
+
+/* Підказки (tooltip) */
+.info-tooltip {
+  position: relative;
+  display: inline-block;
+  margin-left: 10px;
+  cursor: help;
+  font-size: 16px;
+  color: #888;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 260px;
+  background-color: #f9f9f9;
+  color: #333;
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  position: absolute;
+  z-index: 1;
+  top: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.info-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Фільтр дат */
+.date-range-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 20px 0 30px;
+}
+
+.date-range-controls label {
+  font-weight: 600;
+}
+
+.date-range-controls input,
+.date-range-controls select {
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.date-range-controls input:focus,
+.date-range-controls select:focus {
+  border-color: #76b39d;
+  box-shadow: 0 0 0 3px rgba(144, 201, 178, 0.25);
+}
+
+/* Завантаження */
+.loading-text {
+  font-size: 18px;
+  color: #555;
+  margin-top: 40px;
+}
+
+/* підсумки */
+
+.summary-section {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 36px;
+  margin-top: 50px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+  animation: fadeInUp 0.6s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Середні значення */
+.averages-block h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #207c65;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.averages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  text-align: center;
+}
+
+.averages-grid div {
+  font-size: 17px;
+  font-weight: 500;
+  color: #333;
+  background: #f8fefb;
+  border: 1px solid #e1f2ed;
+  border-radius: 12px;
+  padding: 12px 18px;
+  transition: all 0.3s ease;
+}
+
+.averages-grid div:hover {
+  box-shadow: 0 4px 12px rgba(32, 124, 101, 0.08);
+  transform: translateY(-2px);
+}
+
+.averages-grid span {
+  display: block;
+  color: #207c65;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* Рекомендації */
+.recommendations-block h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #207c65;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.recommendations-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.recommendations-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #fdfdfd;
+  border-left: 4px solid #f4b942;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+.recommendations-list li:hover {
+  background-color: #fffef8;
+}
+
+.recommendations-list .bullet {
+  font-size: 18px;
+  color: #f4b942;
+  margin-top: 2px;
+}

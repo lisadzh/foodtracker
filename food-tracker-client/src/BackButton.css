@@ -1,0 +1,24 @@
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(to right, #90c9b2, #76b39d);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  margin-bottom: 30px;
+  animation: fadeInUp 0.6s ease-in-out;
+}
+
+.back-button:hover {
+  background-color: #7dbfa5;
+  transform: scale(1.03);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}

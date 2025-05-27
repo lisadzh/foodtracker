@@ -1,0 +1,267 @@
+.stats-container {
+  max-width: 800px;
+  margin: auto;
+  margin-top: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: fadeSlideIn 0.7s ease-in-out;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.page-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #207c65;
+  margin-bottom: 30px;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Форма введення ваги */
+.weight-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.weight-form input {
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.weight-form input:focus {
+  border-color: #76b39d;
+  box-shadow: 0 0 0 3px rgba(144, 201, 178, 0.25);
+}
+
+.weight-form button {
+  background: linear-gradient(to right, #90c9b2, #76b39d);
+  color: white;
+  border: none;
+  padding: 12px 26px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.weight-form button:hover {
+  background-color: #7dbfa5;
+  transform: scale(1.03);
+}
+
+/* Блок з графіком */
+.chart-section {
+  margin-top: 40px;
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  animation: fadeInUp 0.6s ease-in-out;
+}
+
+/* Мін/макс/середня вага */
+.weight-stats {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #333;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+/* Таблиця вагових записів */
+.weight-table {
+  margin-top: 40px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  animation: fadeInUp 0.6s ease-in-out;
+}
+
+.weight-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.weight-table th,
+.weight-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 16px;
+}
+
+.weight-table th {
+  background-color: #f7f7f7;
+  color: #207c65;
+  font-weight: 600;
+  text-align: left;
+}
+
+.weight-table button {
+  margin-right: 8px;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.weight-table button:hover {
+  transform: scale(1.05);
+}
+
+.weight-table button:first-of-type {
+  background-color: #76b39d;
+  color: white;
+}
+
+.weight-table button:last-of-type {
+  background-color: #f28e8e;
+  color: white;
+}
+
+/* Анімації */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.info-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  font-size: 16px;
+  margin-left: 8px;
+  color: #207c65;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 6px;
+  background-color: #e0f0ea;
+  transition: background 0.3s;
+}
+
+.info-tooltip:hover {
+  background-color: #c3e6d4;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  width: 260px;
+  background-color: #ffffff;
+  color: #333;
+  text-align: left;
+  border-radius: 10px;
+  padding: 10px 12px;
+  position: absolute;
+  z-index: 1;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.info-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.weight-table tbody tr {
+  animation: fadeInRow 0.4s ease-in-out;
+  transition: background-color 0.3s ease;
+}
+
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.weight-table tbody tr:hover {
+  background-color: rgba(144, 201, 178, 0.1);
+}
+
+.info-tooltip {
+  margin-left: 8px;
+  cursor: help;
+  display: inline-block;
+  position: relative;
+  font-size: 16px;
+  color: #207c65;
+}
+
+.info-tooltip .tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  background-color: #fff;
+  color: #333;
+  text-align: left;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  z-index: 1;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  transition: opacity 0.3s ease;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.info-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.fade-in {
+  animation: fadeInUp 0.6s ease-in-out;
+}

@@ -1,0 +1,103 @@
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-container {
+  max-width: 500px;
+  margin: auto;
+  margin-top: 0px;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: fadeInUp 0.7s ease-in-out;
+  color: #333;
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.page-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #207c65;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: fadeInUp 0.8s ease-in-out;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  color: #76b39d;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 14px 18px;
+  padding-left: 44px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 14px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.login-form input:focus {
+  border-color: #76b39d;
+  box-shadow: 0 0 0 3px rgba(144, 201, 178, 0.25);
+}
+
+.login-form button {
+  background-color: #90c9b2;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+.login-form button:hover {
+  background-color: #7dbfa5;
+  transform: scale(1.03);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.login-message {
+  margin-top: 15px;
+  text-align: center;
+  color: #2e6259;
+  font-weight: 500;
+  animation: fadeInUp 0.6s ease-in-out;
+}
