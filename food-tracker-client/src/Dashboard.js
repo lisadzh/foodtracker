@@ -10,7 +10,17 @@ import {
   CheckCircle,
   Repeat,
   Search,
+  Plus,
+  Save,
+  X,
 } from "lucide-react";
+import {
+  categoryMap,
+  productMap,
+  mealTypeMap,
+  mealTypeReverseMap,
+  allergenMap,
+} from "./localization";
 
 import { useRef } from "react";
 
@@ -27,137 +37,9 @@ export default function Dashboard() {
   const [goals, setGoals] = useState(null); // норма
   const [todayStats, setTodayStats] = useState(null); // фактичне споживання
   const [searchQuery, setSearchQuery] = useState(""); // Пошук по назві
-
-  // Мапінг назв прийомів їжі
-  const mealTypeMap = useMemo(
-    () => ({
-      Сніданок: "Breakfast",
-      Обід: "Lunch",
-      Вечеря: "Dinner",
-      Перекус: "Snack",
-    }),
-    []
-  );
-
-  // Зворотній мапінг для відображення назв українською
-  const mealTypeReverseMap = useMemo(
-    () => ({
-      breakfast: "Сніданок",
-      lunch: "Обід",
-      dinner: "Вечеря",
-      snack: "Перекус",
-    }),
-    []
-  );
-
-  // Категорії продуктів з перекладом
-  const categoryMap = {
-    All: "Усі",
-    Vegetable: "Овочі",
-    Fruit: "Фрукти",
-    Grain: "Злаки",
-    Meat: "М'ясо",
-    Dairy: "Молочне",
-    Drink: "Напої",
-    Soup: "Страви",
-    Sweet: "Солодке",
-  };
-
-  // Словник перекладу назв продуктів
-  const productMap = {
-    Tomato: "Помідор",
-    Cucumber: "Огірок",
-    Carrot: "Морква",
-    Broccoli: "Броколі",
-    Cabbage: "Капуста",
-    Zucchini: "Кабачок",
-    "Bell Pepper": "Болгарський перець",
-    Eggplant: "Баклажан",
-    Spinach: "Шпинат",
-    Beetroot: "Буряк",
-    "Green Beans": "Зелена квасоля",
-    "Corn (boiled)": "Кукурудза (варена)",
-    "Pickled Cucumbers": "Мариновані огірки",
-    Onion: "Цибуля",
-    Garlic: "Часник",
-    Banana: "Банан",
-    Apple: "Яблуко",
-    Orange: "Апельсин",
-    Pear: "Груша",
-    Grapes: "Виноград",
-    Watermelon: "Кавун",
-    Melon: "Диня",
-    Kiwi: "Ківі",
-    Mango: "Манго",
-    Pineapple: "Ананас",
-    Blueberries: "Чорниця",
-    Strawberries: "Полуниця",
-    Avocado: "Авокадо",
-    Pomegranate: "Гранат",
-    Figs: "Інжир",
-    "Bread (white)": "Білий хліб",
-    "Bread (whole grain)": "Цільнозерновий хліб",
-    "Rye Bread": "Житній хліб",
-    "Pasta (boiled)": "Макарони варені",
-    "Boiled Rice": "Рис варений",
-    "Buckwheat (boiled)": "Гречка варена",
-    Oatmeal: "Вівсянка",
-    "Barley Porridge": "Ячна каша",
-    "Millet Porridge": "Пшоняна каша",
-    Cornflakes: "Кукурудзяні пластівці",
-    Granola: "Гранола",
-    Croissant: "Круасан",
-    Muffin: "Маффін",
-    "Fried Chicken Breast": "Куряча грудка смажена",
-    "Grilled Pork Chop": "Свинина гриль",
-    "Boiled Beef with Vegetables": "Яловичина з овочами",
-    "Fried Fish Fillet": "Рибне філе смажене",
-    "Baked Salmon with Lemon": "Запечений лосось",
-    "Tuna Salad with Corn": "Салат з тунцем",
-    "Stewed Liver with Onion": "Печінка тушкована",
-    Ham: "Шинка",
-    Sausage: "Ковбаса",
-    Egg: "Яйце",
-    "Boiled Egg": "Яйце варене",
-    Milk: "Молоко",
-    Cheese: "Сир",
-    "Cottage Cheese": "Творог",
-    Yogurt: "Йогурт",
-    "Greek Yogurt": "Грецький йогурт",
-    "Sour Cream 15%": "Сметана 15%",
-    "Processed Cheese": "Плавлений сир",
-    Water: "Вода",
-    Tea: "Чай",
-    Coffee: "Кава",
-    "Juice (orange)": "Сік апельсиновий",
-    "Coca-Cola": "Кока-Кола",
-    Milkshake: "Молочний коктейль",
-    Smoothie: "Смузі",
-    "Protein Shake": "Протеїновий коктейль",
-    Kvass: "Квас",
-    "Mashed Potato": "Пюре картопляне",
-    "Fried Potato": "Картопля смажена",
-    "Baked Potato with Cheese": "Картопля з сиром",
-    "Buckwheat with Gravy": "Гречка з підливою",
-    "Rice with Chicken": "Рис з куркою",
-    "Fried Rice with Vegetables": "Рис з овочами",
-    "Macaroni with Cheese": "Макарони з сиром",
-    "Pelmeni with Sour Cream": "Пельмені зі сметаною",
-    "Chicken Cutlet with Buckwheat": "Котлета з гречкою",
-    "Chicken Soup": "Курячий суп",
-    Borscht: "Борщ",
-    "Lentil Soup": "Суп з сочевиці",
-    "Stuffed Cabbage Rolls": "Голубці",
-    "Vegetable Stew": "Овочеве рагу",
-    Chocolate: "Шоколад",
-    Candy: "Цукерка",
-    Cookie: "Печиво",
-    "Cheesecakes with Raisins": "Сирники з родзинками",
-    "Syrniki with Sour Cream": "Сирники зі сметаною",
-    "Pancakes with Jam": "Млинці з варенням",
-    Jam: "Варення",
-    Honey: "Мед",
-  };
+  const [editFoodId, setEditFoodId] = useState(null); // ID редактируемого продукта
+  const [showAllergenicFoods, setShowAllergenicFoods] = useState(false);
+  const [userAllergies, setUserAllergies] = useState([]);
 
   // Завантаження прийомів їжі з бекенду та переклад типів
   const loadMealsForDate = useCallback(async () => {
@@ -245,11 +127,14 @@ export default function Dashboard() {
 
   // Завантаження списку всіх продуктів
   useEffect(() => {
+    if (!token) return;
     axios
-      .get("http://localhost:5000/api/foods")
+      .get("http://localhost:5000/api/foods", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((res) => setFoods(res.data))
       .catch((err) => console.error("Помилка завантаження продуктів:", err));
-  }, []);
+  }, [token]);
 
   // Оновлення прийомів при зміні дати
   useEffect(() => {
@@ -270,6 +155,23 @@ export default function Dashboard() {
       })
       .then((res) => setGoals(res.data))
       .catch((err) => console.error("Помилка цілей:", err));
+
+    axios
+      .get("http://localhost:5000/api/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const allergyRaw = res.data?.allergies;
+        if (typeof allergyRaw === "string" && allergyRaw.trim()) {
+          setUserAllergies(
+            allergyRaw.split(",").map((a) => a.trim().toLowerCase())
+          );
+        } else {
+          setUserAllergies([]); // явно очищаем
+        }
+      })
+
+      .catch((err) => console.error("Помилка алергій:", err));
 
     // Отримуємо фактичні значення
     axios
@@ -399,13 +301,26 @@ export default function Dashboard() {
   const filteredFoods =
     categoryFilter === "All"
       ? foods
-      : foods.filter((food) => food.category === categoryFilter.toLowerCase());
+      : foods.filter(
+          (food) => food.category.toLowerCase() === categoryFilter.toLowerCase()
+        );
 
   const searchedFoods = filteredFoods.filter((food) =>
     (productMap[food.name] || food.name)
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
+
+  const allergenFilteredFoods = showAllergenicFoods
+    ? searchedFoods
+    : searchedFoods.filter((food) => {
+        if (!food.allergens) return true;
+        const foodAllergens = food.allergens
+          .split(",")
+          .map((a) => a.trim().toLowerCase());
+
+        return !foodAllergens.some((a) => userAllergies.includes(a));
+      });
 
   const categories = [
     "All",
@@ -418,6 +333,101 @@ export default function Dashboard() {
     "Soup",
     "Sweet",
   ];
+
+  // додати продукт
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newFood, setNewFood] = useState({
+    name: "",
+    category: "Vegetable",
+    calories: "",
+    protein: "",
+    fats: "",
+    carbs: "",
+  });
+
+  const formData = new FormData();
+  formData.append("name", newFood.name);
+  formData.append("category", newFood.category);
+  formData.append("calories", newFood.calories);
+  formData.append("protein", newFood.protein);
+  formData.append("fats", newFood.fats);
+  formData.append("carbs", newFood.carbs);
+  if (newFood.imageFile) {
+    formData.append("image", newFood.imageFile);
+  }
+
+  const handleAddFood = async () => {
+    const formData = new FormData();
+    Object.entries(newFood).forEach(([key, value]) => {
+      if (key === "imageFile" && value) {
+        formData.append("image", value);
+      } else if (key !== "imageFile") {
+        formData.append(key, value);
+      }
+    });
+
+    try {
+      const url = editFoodId
+        ? `http://localhost:5000/api/foods/${editFoodId}`
+        : "http://localhost:5000/api/foods";
+      const method = editFoodId ? "put" : "post";
+
+      await axios[method](url, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      alert(editFoodId ? "Продукт оновлено!" : "Продукт додано!");
+      setShowAddModal(false);
+      setEditFoodId(null);
+      setNewFood({
+        name: "",
+        category: "Vegetable",
+        calories: "",
+        protein: "",
+        fats: "",
+        carbs: "",
+        imageFile: null,
+      });
+
+      const res = await axios.get("http://localhost:5000/api/foods", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFoods(res.data);
+    } catch (err) {
+      alert("Помилка під час збереження продукту");
+      console.error(err);
+    }
+  };
+
+  const handleDeleteFood = async (id) => {
+    if (!window.confirm("Ви впевнені, що хочете видалити цей продукт?")) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/foods/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFoods((prev) => prev.filter((f) => f.id !== id));
+    } catch (err) {
+      alert("Не вдалося видалити продукт");
+      console.error(err);
+    }
+  };
+
+  const openEditModal = (food) => {
+    setNewFood({
+      name: food.name,
+      category: food.category,
+      calories: food.calories,
+      protein: food.protein,
+      fats: food.fats,
+      carbs: food.carbs,
+      imageFile: null, // если нужно заменить картинку
+    });
+    setEditFoodId(food.id);
+    setShowAddModal(true);
+  };
 
   // Інтерфейс
   return (
@@ -562,6 +572,16 @@ export default function Dashboard() {
               {categoryMap[cat] || cat}
             </button>
           ))}
+          <button
+            type="button"
+            className={`add-own-button ${
+              categoryFilter === "custom" ? "active" : ""
+            }`}
+            onClick={() => setShowAddModal(true)}
+          >
+            <Plus size={18} style={{ marginRight: "6px" }} />
+            Додати продукт
+          </button>
         </div>
 
         <div className="dashboard-controls search-bar">
@@ -574,9 +594,27 @@ export default function Dashboard() {
           />
         </div>
 
+        <div className="dashboard-controls">
+          <label className="allergen-toggle">
+            <input
+              type="checkbox"
+              checked={showAllergenicFoods}
+              onChange={(e) => setShowAllergenicFoods(e.target.checked)}
+            />
+            Показувати продукти з алергенами
+          </label>
+
+          {!showAllergenicFoods && userAllergies.length > 0 && (
+            <div className="allergen-warning">
+              Сховано продукти з алергенами:{" "}
+              {userAllergies.map((a) => allergenMap[a] || a).join(", ")}
+            </div>
+          )}
+        </div>
+
         {/* Сітка продуктів */}
         <div className="food-grid">
-          {searchedFoods.map((food) => (
+          {allergenFilteredFoods.map((food) => (
             <div
               key={food.id}
               className={`food-card ${
@@ -584,15 +622,39 @@ export default function Dashboard() {
               }`}
               onClick={() => toggleFood(food.id)}
             >
+              {food.user_id && (
+                <div
+                  className="food-actions"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={() => openEditModal(food)}
+                    title="Редагувати"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteFood(food.id)}
+                    title="Видалити"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              )}
               <img
-                src={`/images/foods/${food.name
-                  .toLowerCase()
-                  .replace(/ /g, "_")
-                  .replace(/%/g, "percent")}.jpg`}
+                src={
+                  food.image
+                    ? `http://localhost:5000/images/foods/${food.image}`
+                    : `/images/foods/${food.name
+                        .toLowerCase()
+                        .replace(/ /g, "_")
+                        .replace(/%/g, "percent")}.jpg`
+                }
                 alt={food.name}
                 className="food-image"
                 onError={(e) => (e.target.style.display = "none")}
               />
+
               <strong>{productMap[food.name] || food.name}</strong>
               <p>{food.calories} ккал</p>
               <p>
@@ -603,7 +665,9 @@ export default function Dashboard() {
                   className="gram-input"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <label>г:</label>
+                  <label>
+                    {food.category?.toLowerCase() === "drink" ? "мл:" : "г:"}
+                  </label>
                   <input
                     type="number"
                     min="1"
@@ -633,6 +697,113 @@ export default function Dashboard() {
         >
           Зберегти прийом їжі
         </button>
+
+        {/* Модальне вікно */}
+        {showAddModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>
+                {editFoodId ? "Редагувати продукт" : "Додати новий продукт"}
+              </h3>
+
+              <label>
+                Назва продукту:
+                <input
+                  type="text"
+                  placeholder="Наприклад: Морква"
+                  value={newFood.name}
+                  onChange={(e) =>
+                    setNewFood({ ...newFood, name: e.target.value })
+                  }
+                />
+              </label>
+
+              <label>
+                Категорія:
+                <select
+                  value={newFood.category}
+                  onChange={(e) =>
+                    setNewFood({ ...newFood, category: e.target.value })
+                  }
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {categoryMap[cat]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
+                Калорії на 100г:
+                <input
+                  type="number"
+                  placeholder="ккал"
+                  value={newFood.calories}
+                  onChange={(e) =>
+                    setNewFood({ ...newFood, calories: e.target.value })
+                  }
+                />
+              </label>
+
+              <label>
+                Білки (г):
+                <input
+                  type="number"
+                  placeholder="г"
+                  value={newFood.protein}
+                  onChange={(e) =>
+                    setNewFood({ ...newFood, protein: e.target.value })
+                  }
+                />
+              </label>
+
+              <label>
+                Жири (г):
+                <input
+                  type="number"
+                  placeholder="г"
+                  value={newFood.fats}
+                  onChange={(e) =>
+                    setNewFood({ ...newFood, fats: e.target.value })
+                  }
+                />
+              </label>
+
+              <label>
+                Вуглеводи (г):
+                <input
+                  type="number"
+                  placeholder="г"
+                  value={newFood.carbs}
+                  onChange={(e) =>
+                    setNewFood({ ...newFood, carbs: e.target.value })
+                  }
+                />
+              </label>
+
+              <label>
+                Фото (необов’язково):
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setNewFood({ ...newFood, imageFile: e.target.files[0] })
+                  }
+                />
+              </label>
+
+              <div className="modal-actions">
+                <button onClick={handleAddFood}>
+                  {editFoodId ? "Зберегти зміни" : "Додати"}
+                </button>
+                <button onClick={() => setShowAddModal(false)}>
+                  Скасувати
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Відображення прийомів їжі */}
         {mealsByDate.length > 0 && (
@@ -693,11 +864,17 @@ export default function Dashboard() {
                               }))
                             }
                           />
-                          <button onClick={() => handleUpdateMealItem(food)}>
-                            💾
+                          <button
+                            onClick={() => handleUpdateMealItem(food)}
+                            className="icon-btn"
+                          >
+                            <Save size={18} />
                           </button>
-                          <button onClick={() => setEditingItemId(null)}>
-                            ✖
+                          <button
+                            onClick={() => setEditingItemId(null)}
+                            className="icon-btn"
+                          >
+                            <X size={18} />
                           </button>
                         </>
                       ) : (

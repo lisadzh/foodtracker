@@ -5,7 +5,26 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.join(__dirname, "public", "images", "foods");
+    fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const unique = Date.now() + "-" + file.originalname.replace(/\s/g, "_");
+    cb(null, unique);
+  },
+});
+
+const upload = multer({ storage });
 const app = express();
+
+app.use("/images", express.static(path.join(__dirname, "public", "images")));
 app.use(cors());
 app.use(express.json());
 
@@ -99,26 +118,28 @@ app.post("/api/profile", (req, res) => {
     return res.status(401).json({ message: "Invalid token" });
   }
 
-  const { height, weight, age, gender, activity, goal } = req.body;
+  let { height, weight, age, gender, activity, goal, allergies } = req.body;
+  if (typeof allergies !== "string") allergies = "";
 
   const query = `
-    INSERT INTO profiles (user_id, height, weight, age, gender, activity, goal)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO profiles (user_id, height, weight, age, gender, activity, goal, allergies)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
       height = VALUES(height),
       weight = VALUES(weight),
       age = VALUES(age),
       gender = VALUES(gender),
       activity = VALUES(activity),
-      goal = VALUES(goal)
+      goal = VALUES(goal),
+      allergies = VALUES(allergies)
   `;
 
   db.query(
     query,
-    [userId, height, weight, age, gender, activity, goal],
+    [userId, height, weight, age, gender, activity, goal, allergies],
     (err, result) => {
       if (err) return res.status(500).json({ message: "Server error" });
-      res.json({ message: "Profile saved successfully" });
+      res.json({ message: "Профіль успішно збережено!" });
     }
   );
 });
@@ -195,9 +216,253 @@ app.get("/api/calories", (req, res) => {
 
 // Отримати список всіх доступних продуктів
 app.get("/api/foods", (req, res) => {
-  db.query("SELECT * FROM foods", (err, results) => {
-    if (err) return res.status(500).json({ message: "Server error" });
-    res.json(results); // Повертаємо масив продуктів
+  const token = req.headers.authorization?.split(" ")[1];
+
+  let userId = null;
+  try {
+    userId = jwt.verify(token, process.env.JWT_SECRET).id;
+  } catch {}
+
+  const query = `
+    SELECT * FROM foods
+    WHERE is_custom = 0 OR user_id = ?
+  `;
+  db.query(query, [userId], (err, results) => {
+    if (err) return res.status(500).json({ message: "DB error" });
+    res.json(results);
+  });
+});
+
+app.post("/api/foods", upload.single("image"), (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  let userId;
+  try {
+    userId = jwt.verify(token, process.env.JWT_SECRET).id;
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  const { name, category, calories, protein, fats, carbs, allergens } =
+    req.body;
+  const image = req.file ? req.file.filename : null;
+
+  if (!name || !category || calories == null) {
+    return res.status(400).json({ message: "Missing fields" });
+  }
+
+  const query = `
+    INSERT INTO foods (name, category, calories, protein, fats, carbs, is_custom, user_id, image, allergens)
+    VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
+  `;
+
+  db.query(
+    query,
+    [name, category, calories, protein, fats, carbs, userId, image, allergens],
+    (err) => {
+      if (err) return res.status(500).json({ message: "Insert failed" });
+      res.json({ message: "Продукт додано" });
+    }
+  );
+});
+
+// ОБНОВЛЕННЯ ПРОДУКТУ
+app.put("/api/foods/:id", upload.single("image"), (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  let userId;
+  try {
+    userId = jwt.verify(token, process.env.JWT_SECRET).id;
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  const { name, category, calories, protein, fats, carbs, allergens } =
+    req.body;
+  const image = req.file ? req.file.filename : null;
+  const foodId = req.params.id;
+
+  // Проверка доступа: пользователь должен быть владельцем
+  db.query(
+    "SELECT * FROM foods WHERE id = ? AND user_id = ?",
+    [foodId, userId],
+    (err, results) => {
+      if (err) return res.status(500).json({ message: "DB error" });
+      if (results.length === 0)
+        return res.status(403).json({ message: "Access denied" });
+
+      const fields = [
+        "name",
+        "category",
+        "calories",
+        "protein",
+        "fats",
+        "carbs",
+        "allergens",
+      ];
+      const updates = fields.map((f) => `${f} = ?`).join(", ");
+      const values = [
+        name,
+        category,
+        calories,
+        protein,
+        fats,
+        carbs,
+        allergens,
+      ];
+
+      let sql = `UPDATE foods SET ${updates}`;
+      if (image) {
+        sql += ", image = ?";
+        values.push(image);
+      }
+
+      sql += " WHERE id = ? AND user_id = ?";
+      values.push(foodId, userId);
+
+      db.query(sql, values, (err2) => {
+        if (err2) return res.status(500).json({ message: "Update error" });
+        res.json({ message: "Продукт оновлено" });
+      });
+    }
+  );
+});
+
+// ВИДАЛЕННЯ ПРОДУКТУ
+app.delete("/api/foods/:id", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  let userId;
+  try {
+    userId = jwt.verify(token, process.env.JWT_SECRET).id;
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  const foodId = req.params.id;
+
+  db.query(
+    "DELETE FROM foods WHERE id = ? AND user_id = ?",
+    [foodId, userId],
+    (err, result) => {
+      if (err) return res.status(500).json({ message: "DB error" });
+      if (result.affectedRows === 0)
+        return res.status(403).json({ message: "Access denied" });
+
+      res.json({ message: "Продукт видалено" });
+    }
+  );
+});
+
+// Адмін: додати новий продукт для всіх користувачів
+app.post("/api/admin/foods", upload.single("image"), (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  let isAdmin;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    isAdmin = decoded.role === "admin";
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  if (!isAdmin) return res.status(403).json({ message: "Access denied" });
+
+  const { name, category, calories, protein, fats, carbs, allergens } =
+    req.body;
+  const image = req.file ? req.file.filename : null;
+
+  db.query(
+    `INSERT INTO foods (name, category, calories, protein, fats, carbs, is_custom, user_id, image, allergens)
+     VALUES (?, ?, ?, ?, ?, ?, 0, NULL, ?, ?)`,
+    [name, category, calories, protein, fats, carbs, image, allergens],
+    (err) => {
+      if (err) return res.status(500).json({ message: "Insert failed" });
+      res.json({ message: "Продукт додано" });
+    }
+  );
+});
+
+// Адмін: редагування продукту
+app.put("/api/admin/foods/:id", upload.single("image"), (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  let isAdmin;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    isAdmin = decoded.role === "admin";
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  if (!isAdmin) return res.status(403).json({ message: "Access denied" });
+
+  const foodId = req.params.id;
+  const { name, category, calories, protein, fats, carbs, allergens } =
+    req.body;
+
+  const allergensString = Array.isArray(allergens)
+    ? allergens.join(",")
+    : allergens;
+
+  const image = req.file ? req.file.filename : null;
+
+  console.log("Обновление продукта админом:", {
+    name,
+    category,
+    calories,
+    protein,
+    fats,
+    carbs,
+    allergens,
+  });
+
+  const fields = ["name", "category", "calories", "protein", "fats", "carbs"];
+  const values = [name, category, calories, protein, fats, carbs];
+  if (image) {
+    fields.push("image");
+    values.push(image);
+  }
+  fields.push("allergens");
+  values.push(allergensString);
+
+  const query = `
+    UPDATE foods SET ${fields.map((f) => `${f} = ?`).join(", ")}
+    WHERE id = ?
+  `;
+  values.push(foodId);
+
+  db.query(query, values, (err) => {
+    if (err) return res.status(500).json({ message: "Update failed" });
+    res.json({ message: "Оновлено" });
+  });
+});
+
+// Адмін: видалення продукту
+app.delete("/api/admin/foods/:id", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  let isAdmin;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    isAdmin = decoded.role === "admin";
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  if (!isAdmin) return res.status(403).json({ message: "Access denied" });
+
+  const foodId = req.params.id;
+
+  db.query("DELETE FROM foods WHERE id = ?", [foodId], (err, result) => {
+    if (err) return res.status(500).json({ message: "DB error" });
+    res.json({ message: "Deleted" });
   });
 });
 
@@ -585,14 +850,24 @@ app.get("/api/statistics", (req, res) => {
     .then(([goals, stats]) => {
       const recommendations = [];
       let lowProteinDays = 0;
+      let highProteinDays = 0;
+      let lowFatDays = 0;
+      let highFatDays = 0;
+      let lowCarbDays = 0;
       let highCarbDays = 0;
+      let lowCalorieDays = 0;
+      let highCalorieDays = 0;
 
       const dataWithAnalysis = stats.map((day) => {
         const { date, calories, protein, fats, carbs } = day;
 
         //  Визначаємо відхилення від норми
-        if (protein < goals.protein * 0.9) lowProteinDays++;
-        if (carbs > goals.carbs * 1.1) highCarbDays++;
+        if (protein > goals.protein * 1.1) highProteinDays++;
+        if (fats < goals.fats * 0.9) lowFatDays++;
+        if (fats > goals.fats * 1.1) highFatDays++;
+        if (carbs < goals.carbs * 0.9) lowCarbDays++;
+        if (calories < goals.calories * 0.9) lowCalorieDays++;
+        if (calories > goals.calories * 1.1) highCalorieDays++;
 
         return {
           date,
@@ -604,16 +879,53 @@ app.get("/api/statistics", (req, res) => {
         };
       });
 
-      //  Формування текстових рекомендацій
+      // Формування текстових рекомендацій на основі статистики ( мин. 3 дня)
+
       if (lowProteinDays >= 3) {
         recommendations.push(
-          `Low protein intake on ${lowProteinDays} out of ${stats.length} days. Try adding more eggs, chicken, or cottage cheese.`
+          `Протягом ${lowProteinDays} днів Ви споживали недостатньо білків. Спробуйте додати більше яєць, курки, сиру або бобових.`
+        );
+      }
+
+      if (highProteinDays >= 3) {
+        recommendations.push(
+          `У ${highProteinDays} випадках білкове споживання перевищувало норму. Зверніть увагу на баланс білків у раціоні.`
+        );
+      }
+
+      if (lowFatDays >= 3) {
+        recommendations.push(
+          `Недостатнє споживання жирів у ${lowFatDays} днях. Додайте до раціону корисні жири: авокадо, горіхи, оливкова олія.`
+        );
+      }
+
+      if (highFatDays >= 3) {
+        recommendations.push(
+          `Протягом ${highFatDays} днів Ви споживали занадто багато жирів. Намагайтесь обмежити жирні соуси та смажені страви.`
+        );
+      }
+
+      if (lowCarbDays >= 3) {
+        recommendations.push(
+          `У ${lowCarbDays} днях спостерігалося знижене споживання вуглеводів. Включіть більше овочів, цільнозернових продуктів або фруктів.`
         );
       }
 
       if (highCarbDays >= 3) {
         recommendations.push(
-          `Excess carbohydrate intake on ${highCarbDays} days. Consider reducing bread and sugary foods.`
+          `Надлишок вуглеводів у ${highCarbDays} днях. Спробуйте зменшити споживання хліба, солодощів або макаронів.`
+        );
+      }
+
+      if (lowCalorieDays >= 3) {
+        recommendations.push(
+          `Загальна калорійність була занадто низькою протягом ${lowCalorieDays} днів. Це може призводити до втрати енергії.`
+        );
+      }
+
+      if (highCalorieDays >= 3) {
+        recommendations.push(
+          `Протягом ${highCalorieDays} днів Ви перевищили добову норму калорій. Контролюйте порції та уникайте зайвих перекусів.`
         );
       }
 
@@ -831,6 +1143,119 @@ app.put("/api/admin/users/:id/role", (req, res) => {
     (err, result) => {
       if (err) return res.status(500).json({ message: "DB error" });
       res.json({ message: "Role updated" });
+    }
+  );
+});
+
+// Отримати всі фідбеки (тільки для адмінів)
+app.get("/api/admin/feedbacks", isAdmin, (req, res) => {
+  db.query(
+    `SELECT feedback.id, feedback.message, feedback.created_at, feedback.is_read, users.email
+     FROM feedback
+     JOIN users ON feedback.user_id = users.id
+     ORDER BY feedback.created_at DESC`,
+    (err, results) => {
+      if (err) return res.status(500).json({ message: "DB error" });
+      res.json(results);
+    }
+  );
+});
+
+// Видалити відгук (тільки для адміна)
+app.delete("/api/admin/feedbacks/:id", isAdmin, (req, res) => {
+  const feedbackId = req.params.id;
+  db.query("DELETE FROM feedback WHERE id = ?", [feedbackId], (err) => {
+    if (err) return res.status(500).json({ message: "DB error" });
+    res.json({ message: "Feedback deleted" });
+  });
+});
+
+// відмітити прочитане (адмін)
+app.put("/api/admin/feedback/:id/read", isAdmin, (req, res) => {
+  const feedbackId = req.params.id;
+  db.query(
+    "UPDATE feedback SET is_read = true WHERE id = ?",
+    [feedbackId],
+    (err) => {
+      if (err) return res.status(500).json({ message: "DB error" });
+      res.json({ message: "Позначено як прочитане" });
+    }
+  );
+});
+
+// Відповісти на відгук (тільки для адміна)
+app.put("/api/admin/feedbacks/:id/reply", isAdmin, (req, res) => {
+  const { reply } = req.body;
+  const feedbackId = req.params.id;
+
+  if (!reply)
+    return res
+      .status(400)
+      .json({ message: "Відповідь не може бути порожньою" });
+
+  const query = `
+    UPDATE feedback
+    SET reply = ?, replied_at = NOW(), is_read = 1
+    WHERE id = ?
+  `;
+
+  db.query(query, [reply, feedbackId], (err) => {
+    if (err) return res.status(500).json({ message: "DB error" });
+    res.json({ message: "Відповідь надіслано" });
+  });
+});
+
+// Отримати всі відгуки поточного користувача
+app.get("/api/my-feedbacks", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  let userId;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    userId = decoded.id;
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  const query = `
+    SELECT id, message, created_at, reply, replied_at, is_read
+    FROM feedback
+    WHERE user_id = ?
+    ORDER BY created_at DESC
+  `;
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error("DB error:", err);
+      return res.status(500).json({ message: "DB error" });
+    }
+    res.json(results);
+  });
+});
+
+app.delete("/api/my-feedbacks/:id", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  let userId;
+  try {
+    userId = jwt.verify(token, process.env.JWT_SECRET).id;
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+
+  const feedbackId = req.params.id;
+
+  // Видаляємо лише, якщо належить користувачу і ще без відповіді
+  db.query(
+    "DELETE FROM feedback WHERE id = ? AND user_id = ? AND reply IS NULL",
+    [feedbackId, userId],
+    (err, result) => {
+      if (err) return res.status(500).json({ message: "DB error" });
+      if (result.affectedRows === 0)
+        return res.status(403).json({ message: "Неможливо видалити" });
+      res.json({ message: "Відгук видалено" });
     }
   );
 });

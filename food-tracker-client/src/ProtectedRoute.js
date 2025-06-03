@@ -1,9 +1,18 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import { Navigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
-export default function ProtectedRoute({ children }) {
-  const { isLoggedIn } = useAuth();
+export default function ProtectedRoute({ children, adminOnly = false }) {
+  const { token } = useAuth();
 
-  return isLoggedIn ? children : <Navigate to="/login" />;
+  if (!token) return <Navigate to="/login" />;
+
+  const decoded = jwtDecode(token);
+
+  if (adminOnly && decoded.role !== "admin") {
+    return <Navigate to="/profile" />; // звичайний користувач не може в /admin
+  }
+
+  return children;
 }

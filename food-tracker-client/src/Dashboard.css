@@ -10,6 +10,8 @@
   --shadow: rgba(0, 0, 0, 0.1);
   --radius: 14px;
   --font: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --gray-lightest: #f8f8f8;
+  --green-dark: #145c4e;
 }
 
 @keyframes fadeInUp {
@@ -31,7 +33,8 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius);
   padding: 40px 30px;
-  box-shadow: 0 10px 30px var(--shadow);
+  box-shadow: 0 4px 8px rgba(32, 124, 101, 0.05),
+    0 8px 24px rgba(32, 124, 101, 0.08) var(--shadow);
   animation: fadeInUp 0.7s ease-in-out;
   font-family: var(--font);
   color: var(--gray-dark);
@@ -93,6 +96,7 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
+  background-color: var(--gray-lightest);
 }
 
 .category-filter button.active,
@@ -126,7 +130,8 @@
 
 .food-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 8px rgba(32, 124, 101, 0.05),
+    0 8px 24px rgba(32, 124, 101, 0.08);
 }
 
 .food-card.selected {
@@ -203,7 +208,8 @@
   background: var(--green-pastel);
   padding: 20px;
   border-radius: var(--radius);
-  box-shadow: 0 4px 12px rgba(32, 124, 101, 0.08);
+  box-shadow: 0 4px 8px rgba(32, 124, 101, 0.05),
+    0 8px 24px rgba(32, 124, 101, 0.08);
 }
 
 .meal-block h4 {
@@ -636,4 +642,216 @@
 
 .search-bar .search-icon {
   color: var(--green);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 36px;
+  width: 420px;
+  box-shadow: 0 4px 8px rgba(32, 124, 101, 0.05),
+    0 8px 24px rgba(32, 124, 101, 0.08);
+  animation: fadeInUp 0.4s ease;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.add-food-btn {
+  margin-top: 20px;
+  background-color: #76b39d;
+  color: white;
+  padding: 10px 18px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.add-food-btn:hover {
+  background-color: #5e9f89;
+}
+
+button,
+input,
+select,
+.food-card,
+.copy-btn,
+.icon-btn {
+  transition: all 0.25s ease;
+}
+
+button:disabled {
+  background-color: #ccc !important;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.food-card.selected {
+  background-color: #f0fff7;
+  border: 2px solid var(--green-dark);
+}
+
+.add-own-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50px;
+  background-color: #eee;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--gray-lightest);
+}
+
+.add-own-button:hover,
+.add-own-button.active {
+  background-color: var(--green-light);
+  color: white;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 36px;
+  width: 420px;
+  box-shadow: 0 4px 8px rgba(32, 124, 101, 0.05),
+    0 8px 24px rgba(32, 124, 101, 0.08);
+  animation: fadeInUp 0.4s ease;
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--green-dark);
+  text-align: center;
+}
+
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.modal-actions button:first-child {
+  background: var(--green-light);
+  color: white;
+}
+
+.modal-actions button:first-child:hover {
+  background: var(--green);
+}
+
+.modal-actions button:last-child {
+  background: #eee;
+}
+
+.modal-actions button:last-child:hover {
+  background: #ddd;
+}
+.food-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.food-actions button {
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.food-actions button:hover {
+  background-color: #dcdcdc;
+}
+
+.modal-content label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--gray-dark);
+  font-size: 15px;
+}
+
+.modal-content label input,
+.modal-content label select {
+  margin-top: 6px;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal-content label input:focus,
+.modal-content label select:focus {
+  outline: none;
+  border-color: var(--green-light);
+  box-shadow: 0 0 0 2px rgba(32, 124, 101, 0.15);
+}
+
+.allergen-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--gray-dark);
+}
+
+.allergen-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--green);
+}
+
+.allergen-warning {
+  font-size: 13px;
+  color: #d35400;
+  margin-top: 4px;
+  text-align: center;
 }

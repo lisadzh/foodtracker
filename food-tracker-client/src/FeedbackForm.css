@@ -1,0 +1,119 @@
+.feedback-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 30px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", sans-serif;
+  animation: fadeInUp 0.6s ease-in-out;
+  text-align: center;
+}
+
+.feedback-container h2 {
+  font-size: 32px;
+  font-weight: bold;
+  color: #207c65;
+  margin-bottom: 10px;
+}
+
+.feedback-container p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+.feedback-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.feedback-container textarea {
+  width: 100%;
+  max-width: 600px;
+  font-size: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #ccc;
+  resize: none;
+  outline: none;
+  transition: 0.3s ease;
+  font-family: inherit;
+  background-color: #f9f9f9;
+}
+
+.feedback-container textarea:focus {
+  border-color: #4caf88;
+  box-shadow: 0 0 0 3px rgba(144, 201, 178, 0.2);
+}
+
+.feedback-container button {
+  background: linear-gradient(to right, #76b39d, #207c65);
+  color: white;
+  padding: 12px 26px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.feedback-container button:hover {
+  transform: scale(1.03);
+  background: #1c6f5a;
+}
+
+.feedback-status {
+  margin-top: 14px;
+  font-weight: 500;
+  color: #207c65;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Анімація */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.feedback-navigation {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.view-my-feedback-btn {
+  background-color: var(--green-light);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s ease;
+  display: inline-block;
+  box-shadow: 0 4px 10px var(--shadow);
+}
+
+.view-my-feedback-btn:hover {
+  background-color: var(--green);
+  transform: scale(1.03);
+}

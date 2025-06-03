@@ -12,18 +12,27 @@ import {
   Title,
   Filler,
 } from "chart.js";
+import {
+  BarChart3,
+  Trash2,
+  Pencil,
+  SortAsc,
+  SortDesc,
+  Save,
+  X,
+} from "lucide-react";
 import BackButton from "./BackButton";
 import BackgroundWrapper from "./components/BackgroundWrapper";
-import "./Weight.css"; // стилі
+import "./Weight.css";
 
-// Функція для конвертації дати у локальний формат без UTC-зсуву
+// Функція переведення UTC дати у локальний формат YYYY-MM-DD
 function formatLocalDate(dateObj) {
   const offset = dateObj.getTimezoneOffset();
   const localDate = new Date(dateObj.getTime() - offset * 60 * 1000);
   return localDate.toISOString().slice(0, 10);
 }
 
-// Реєстрація компонентів Chart.js
+// Реєстрація необхідних модулів ChartJS
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -47,8 +56,10 @@ export default function Weight() {
     formatLocalDate(new Date(Date.now() - 29 * 24 * 60 * 60 * 1000))
   );
   const [to, setTo] = useState(() => formatLocalDate(new Date()));
+  const [editingDate, setEditingDate] = useState(null);
+  const [editedWeight, setEditedWeight] = useState("");
 
-  // Оновлення діапазону дати при зміні періоду
+  // Оновлення діапазону дат при зміні періоду
   useEffect(() => {
     if (period === "7") {
       setFrom(formatLocalDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000)));
@@ -59,23 +70,25 @@ export default function Weight() {
     }
   }, [period]);
 
-  // Завантаження ваги за період
-  useEffect(() => {
-    async function fetchWeights() {
-      try {
-        const res = await axios.get(
-          `http://localhost:5000/api/weight?from=${from}&to=${to}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setWeights(res.data);
-      } catch (err) {
-        console.error("Помилка при завантаженні ваги", err);
-      }
+  // Завантаження даних ваги з сервера
+  const fetchWeights = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/weight?from=${from}&to=${to}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setWeights(res.data);
+    } catch (err) {
+      console.error("Помилка при завантаженні ваги", err);
     }
+  };
+
+  // Завантажити дані при зміні діапазону або токену
+  useEffect(() => {
     fetchWeights();
   }, [token, from, to]);
 
-  // Збереження або оновлення запису
+  // Збереження нової ваги
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -85,15 +98,15 @@ export default function Weight() {
         { date: cleanDate, weight: parseFloat(newWeight) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setMessage("Вага успішно збережена");
+      setMessage("Вага збережена!");
       setNewWeight("");
-      setTimeout(() => window.location.reload(), 500);
+      await fetchWeights();
     } catch (err) {
-      setMessage("Помилка при збереженні ваги");
+      setMessage("Помилка при збереженні!");
     }
   };
 
-  // Дані для графіка
+  // Дані для графіку
   const weightValues = weights
     .map((w) => parseFloat(w.weight))
     .filter((w) => !isNaN(w));
@@ -117,9 +130,11 @@ export default function Weight() {
     <BackgroundWrapper>
       <div className="stats-container">
         <BackButton />
-        <h2 className="page-title">Контроль ваги</h2>
+        <h2 className="page-title">
+          <BarChart3 size={22} style={{ marginRight: 8 }} /> Контроль ваги
+        </h2>
 
-        {/* Фільтр періоду */}
+        {/* Вибір періоду */}
         <div className="date-range-controls">
           <label>Період:</label>
           <select value={period} onChange={(e) => setPeriod(e.target.value)}>
@@ -145,7 +160,7 @@ export default function Weight() {
           )}
         </div>
 
-        {/* Форма додавання/редагування */}
+        {/* Форма для додавання ваги */}
         <form className="weight-form" onSubmit={handleSubmit}>
           <label>Вага (кг):</label>
           <input
@@ -167,22 +182,12 @@ export default function Weight() {
           <button type="submit">Зберегти</button>
         </form>
 
-        {/* Вивід повідомлень */}
-        {message && <p>{message}</p>}
+        {/* Повідомлення */}
+        {message && <p className="weight-message">{message}</p>}
 
         {/* Графік зміни ваги */}
         <div className="chart-section">
-          <h3>
-            Динаміка ваги
-            <span className="info-tooltip">
-              ⓘ
-              <span className="tooltip-text">
-                Графік відображає зміну ваги за вибраний період.
-                <br />
-                Ви можете змінити період зверху та редагувати записи нижче.
-              </span>
-            </span>
-          </h3>
+          <h3>Динаміка ваги</h3>
           <Chart
             type="line"
             data={{
@@ -202,13 +207,8 @@ export default function Weight() {
             }}
             options={{
               responsive: true,
-              animation: {
-                duration: 1000,
-                easing: "easeOutQuart",
-              },
               plugins: {
                 legend: { position: "top" },
-                tooltip: { enabled: true },
               },
               scales: {
                 y: {
@@ -218,6 +218,8 @@ export default function Weight() {
               },
             }}
           />
+
+          {/* Статистика */}
           <div className="weight-stats">
             <p>
               Мінімум: <strong>{min} кг</strong>
@@ -231,20 +233,21 @@ export default function Weight() {
           </div>
         </div>
 
-        {/* Таблиця з усіма записами */}
+        {/* Таблиця ваги */}
         <div className="weight-table">
           <h3>
             Ваші записи
             <button
-              style={{ marginLeft: "12px" }}
+              className="sort-toggle-btn"
               onClick={() =>
                 setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
               }
-              title={`Сортувати за датою (${
-                sortOrder === "asc" ? "⬇️" : "⬆️"
-              })`}
             >
-              🔃
+              {sortOrder === "asc" ? (
+                <SortAsc size={16} />
+              ) : (
+                <SortDesc size={16} />
+              )}
             </button>
           </h3>
           <table>
@@ -261,43 +264,109 @@ export default function Weight() {
                 return (
                   <tr key={w.date} className="fade-in">
                     <td>{displayDate}</td>
-                    <td>{w.weight}</td>
                     <td>
-                      <button
-                        title="Редагувати запис"
-                        onClick={() => {
-                          setDate(displayDate);
-                          setNewWeight(w.weight);
-                          setMessage(`Редагування запису за ${displayDate}`);
-                        }}
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        title="Видалити запис"
-                        onClick={async () => {
-                          try {
-                            await axios.delete(
-                              `http://localhost:5000/api/weight?date=${displayDate}`,
-                              {
-                                headers: { Authorization: `Bearer ${token}` },
+                      {editingDate === displayDate ? (
+                        <input
+                          type="number"
+                          min="30"
+                          max="300"
+                          step="0.1"
+                          value={editedWeight}
+                          onChange={(e) => setEditedWeight(e.target.value)}
+                          style={{
+                            width: "80px",
+                            padding: "4px",
+                            fontSize: "15px",
+                          }}
+                        />
+                      ) : (
+                        w.weight
+                      )}
+                    </td>
+                    <td>
+                      {editingDate === displayDate ? (
+                        <>
+                          <button
+                            className="icon-btn save"
+                            title="Зберегти"
+                            onClick={async () => {
+                              try {
+                                await axios.post(
+                                  "http://localhost:5000/api/weight",
+                                  {
+                                    date: displayDate,
+                                    weight: parseFloat(editedWeight),
+                                  },
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                  }
+                                );
+                                setEditingDate(null);
+                                setEditedWeight("");
+                                fetchWeights();
+                                setMessage("Запис оновлено");
+                              } catch {
+                                setMessage("Помилка оновлення");
                               }
-                            );
-                            setWeights((prev) =>
-                              prev.filter(
-                                (entry) =>
-                                  formatLocalDate(new Date(entry.date)) !==
-                                  displayDate
-                              )
-                            );
-                            setMessage("Запис видалено");
-                          } catch {
-                            setMessage("Помилка видалення");
-                          }
-                        }}
-                      >
-                        🗑️
-                      </button>
+                            }}
+                          >
+                            <Save size={16} />
+                          </button>
+                          <button
+                            className="icon-btn cancel"
+                            title="Скасувати"
+                            onClick={() => {
+                              setEditingDate(null);
+                              setEditedWeight("");
+                            }}
+                          >
+                            <X size={16} />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className="icon-btn edit"
+                            title="Редагувати"
+                            onClick={() => {
+                              setEditingDate(displayDate);
+                              setEditedWeight(w.weight);
+                            }}
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            className="icon-btn delete"
+                            title="Видалити"
+                            onClick={async () => {
+                              try {
+                                await axios.delete(
+                                  `http://localhost:5000/api/weight?date=${displayDate}`,
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                  }
+                                );
+                                setWeights((prev) =>
+                                  prev.filter(
+                                    (entry) =>
+                                      formatLocalDate(new Date(entry.date)) !==
+                                      displayDate
+                                  )
+                                );
+                                setMessage("Запис видалено");
+                              } catch {
+                                setMessage("Помилка видалення");
+                              }
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 );

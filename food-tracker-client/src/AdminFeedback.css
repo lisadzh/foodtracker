@@ -1,0 +1,176 @@
+.admin-feedback {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", sans-serif;
+  animation: fadeInUp 0.6s ease-in-out;
+}
+
+.admin-feedback h2 {
+  font-size: 28px;
+  color: #207c65;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.feedback-list {
+  list-style: none;
+  padding: 0;
+}
+
+.feedback-list li {
+  padding: 16px 20px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  background: #f4fdf9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.feedback-list li strong {
+  display: block;
+  font-size: 16px;
+  color: #207c65;
+  margin-bottom: 8px;
+}
+
+.feedback-list li p {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.feedback-list li span {
+  font-size: 13px;
+  color: #888;
+}
+
+/* Анімація */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delete-btn {
+  background-color: #fdecea;
+  color: #c0392b;
+  border: none;
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #f9c9c3;
+}
+
+.mark-read-btn,
+.delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.new-badge {
+  background-color: #3498db;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin-left: 10px;
+  font-weight: 500;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.unread {
+  background-color: #fff4f4;
+}
+
+.read {
+  background-color: #f6f6f6;
+  opacity: 0.9;
+}
+
+.new-label {
+  background: #e74c3c;
+  color: white;
+  padding: 4px 8px;
+  margin-left: 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.mark-read-btn {
+  background: #c8e6c9;
+  color: #2e7d32;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-right: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.mark-read-btn:hover {
+  background-color: #a5d6a7;
+}
+
+.new-feedback {
+  background-color: #f6fcff;
+  border-left: 4px solid #3498db;
+}
+
+.reply-form {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reply-form textarea {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.reply-form button {
+  align-self: flex-end;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.reply-form button:hover {
+  background: var(--green-light);
+}
+
+.admin-reply {
+  margin-top: 12px;
+  background: #f9fdfc;
+  border-left: 4px solid var(--green);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--gray);
+}

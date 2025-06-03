@@ -12,11 +12,19 @@ import {
   Title,
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
+import {
+  SlidersHorizontal,
+  Lightbulb,
+  Flame,
+  Egg,
+  Sandwich,
+  Droplet,
+} from "lucide-react"; // Іконка сортування
 import BackButton from "./BackButton";
 import BackgroundWrapper from "./components/BackgroundWrapper";
 import "./Statistics.css";
 
-// Підключення частин графіків
+// Підключення модулів для ChartJS
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,7 +36,7 @@ ChartJS.register(
   Title
 );
 
-// Функція для конвертації дати в локальний формат
+// Переведення дати у формат YYYY-MM-DD без зсуву UTC
 function formatLocalDate(dateObj) {
   const offset = dateObj.getTimezoneOffset();
   const localDate = new Date(dateObj.getTime() - offset * 60 * 1000);
@@ -49,7 +57,7 @@ export default function Statistics() {
   const [to, setTo] = useState(() => formatLocalDate(new Date()));
   const [sortBy, setSortBy] = useState("date");
 
-  // Оновлення діапазону дат при виборі періоду
+  // Оновлення діапазону при виборі періоду
   useEffect(() => {
     if (period === "7") {
       setFrom(formatLocalDate(new Date(Date.now() - 6 * 86400000)));
@@ -60,16 +68,14 @@ export default function Statistics() {
     }
   }, [period]);
 
-  // Завантаження статистики
+  // Завантаження статистичних даних
   useEffect(() => {
     async function fetchStatistics() {
       setLoading(true);
       try {
         const res = await axios.get(
           `http://localhost:5000/api/statistics?from=${from}&to=${to}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         setData(res.data.data);
         setGoals(res.data.goals);
@@ -80,10 +86,10 @@ export default function Statistics() {
         setLoading(false);
       }
     }
-
     fetchStatistics();
   }, [from, to, token]);
 
+  // Обчислення середнього значення
   const calculateAverage = (key) => {
     if (!data.length) return 0;
     const sum = data.reduce((acc, day) => acc + Number(day[key]), 0);
@@ -101,12 +107,29 @@ export default function Statistics() {
   const fats = sortedData.map((d) => d.fats);
   const carbs = sortedData.map((d) => d.carbs);
 
+  // Повертає іконку Lucide в залежності від тексту рекомендації
+  function getLucideIcon(text) {
+    const lower = text.toLowerCase();
+    if (lower.includes("білк"))
+      return <Egg size={18} className="icon-bullet" />;
+    if (lower.includes("жир"))
+      return <Droplet size={18} className="icon-bullet" />;
+    if (lower.includes("вуглевод"))
+      return <Sandwich size={18} className="icon-bullet" />;
+    if (lower.includes("калор"))
+      return <Flame size={18} className="icon-bullet" />;
+    return <Lightbulb size={18} className="icon-bullet" />;
+  }
+
+  if (!goals) return <p>Дані про цілі недоступні.</p>;
+
   return (
     <BackgroundWrapper>
       <div className="stats-container">
         <BackButton />
         <h2 className="page-title">Статистика харчування</h2>
 
+        {/* Панель фільтрації */}
         <div className="date-range-controls">
           <label>Період:</label>
           <select value={period} onChange={(e) => setPeriod(e.target.value)}>
@@ -132,7 +155,10 @@ export default function Statistics() {
             </>
           )}
 
-          <label>Сортувати за:</label>
+          <label>
+            <SlidersHorizontal size={16} style={{ marginRight: 6 }} /> Сортувати
+            за:
+          </label>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
             <option value="date">Датою</option>
             <option value="calories">Калоріями</option>
@@ -142,19 +168,20 @@ export default function Statistics() {
           </select>
         </div>
 
+        {/* Завантаження або відображення */}
         {loading ? (
           <p className="loading-text">Завантаження даних...</p>
         ) : (
           <>
+            {/* Калорії */}
             <div className="chart-section">
               <h3>
                 Калорії за день
                 <span className="info-tooltip">
                   ⓘ
                   <span className="tooltip-text">
-                    Цей графік показує, скільки калорій Ви спожили кожного дня у
-                    вибраному періоді. <br />
-                    Червона пунктирна лінія — Ваша рекомендована добова норма.
+                    Графік показує щоденне споживання калорій. <br />
+                    Червона лінія — це Ваша добова ціль.
                   </span>
                 </span>
               </h3>
@@ -185,20 +212,25 @@ export default function Statistics() {
                 }}
                 options={{
                   responsive: true,
+                  animation: {
+                    duration: 800,
+                    easing: "easeOutQuart",
+                  },
                   plugins: { legend: { position: "top" } },
                 }}
               />
             </div>
 
+            {/* Макроелементи */}
             <div className="chart-section">
               <h3>
                 Білки, жири, вуглеводи
                 <span className="info-tooltip">
                   ⓘ
                   <span className="tooltip-text">
-                    Графік допомагає порівняти Ваше фактичне споживання
-                    макронутрієнтів з цілями. <br />
-                    Кожен стовпчик — це окремий день у періоді.
+                    Стовпчики показують фактичне споживання макронутрієнтів по
+                    днях. <br />
+                    Сірі — це Ваші цілі.
                   </span>
                 </span>
               </h3>
@@ -224,7 +256,7 @@ export default function Statistics() {
                     },
                     {
                       label: "Ціль жирів",
-                      data: Array(labels.length).fill(goals.fat),
+                      data: Array(labels.length).fill(goals.fats),
                       backgroundColor: "#ddd",
                     },
                     {
@@ -247,36 +279,37 @@ export default function Statistics() {
               />
             </div>
 
+            {/* Підсумки */}
             <div className="summary-section">
               <div className="averages-block">
-                <h3>📊 Середні показники за період</h3>
+                <h3>Середні значення за період</h3>
                 <div className="averages-grid">
                   <div>
-                    <span>Калорії:</span> {calculateAverage("calories")} /{" "}
-                    {goals.calories}
+                    <span>Калорії</span>
+                    {calculateAverage("calories")} / {goals.calories}
                   </div>
                   <div>
-                    <span>Білки:</span> {calculateAverage("protein")}г /{" "}
-                    {goals.protein}г
+                    <span>Білки</span>
+                    {calculateAverage("protein")}г / {goals.protein}г
                   </div>
                   <div>
-                    <span>Жири:</span> {calculateAverage("fats")}г / {goals.fat}
-                    г
+                    <span>Жири</span>
+                    {calculateAverage("fats")}г / {goals.fats}г
                   </div>
                   <div>
-                    <span>Вуглеводи:</span> {calculateAverage("carbs")}г /{" "}
-                    {goals.carbs}г
+                    <span>Вуглеводи</span>
+                    {calculateAverage("carbs")}г / {goals.carbs}г
                   </div>
                 </div>
               </div>
 
               {recommendations.length > 0 && (
                 <div className="recommendations-block">
-                  <h3>💡 Рекомендації</h3>
+                  <h3>Рекомендації</h3>
                   <ul className="recommendations-list">
                     {recommendations.map((rec, idx) => (
                       <li key={idx}>
-                        <span className="bullet">💡</span>
+                        {getLucideIcon(rec)}
                         {rec}
                       </li>
                     ))}

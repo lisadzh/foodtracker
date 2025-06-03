@@ -133,3 +133,21 @@
     padding: 12px 0;
   }
 }
+
+.auth-toggle {
+  margin-top: 16px;
+  font-size: 15px;
+  text-align: center;
+  color: #444;
+}
+
+.auth-link {
+  color: #207c65;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.auth-link:hover {
+  color: #135c49;
+}

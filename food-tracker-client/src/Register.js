@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { FaEnvelope, FaLock } from "react-icons/fa";
+import { Mail, Lock, UserPlus } from "lucide-react"; // іконки
 import BackButton from "./BackButton";
 import BackgroundWrapper from "./components/BackgroundWrapper";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext"; // 🔐
+import { useAuth } from "./AuthContext";
 
 import "./Register.css";
 
@@ -13,34 +13,29 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const { login } = useAuth(); // отримуємо login() з контексту
-  const navigate = useNavigate(); // для редиректу
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // 1. Реєстрація
       await axios.post("http://localhost:5000/api/register", {
         email,
         password,
       });
+      setMessage("Реєстрація успішна! Вхід...");
 
-      setMessage("Реєстрація успішна! Вхід..."); // повідомлення
-
-      // 2. Вхід
       const loginRes = await axios.post("http://localhost:5000/api/login", {
         email,
         password,
       });
 
-      login(loginRes.data.token); // токен у контекст
-
-      // затримка перед редиректом
+      login(loginRes.data.token);
       setTimeout(() => {
         navigate("/profile");
-      }, 2000); // 2 секунди
+      }, 2000);
     } catch (err) {
-      setMessage(err.response?.data?.message || "❌ Помилка реєстрації");
+      setMessage(err.response?.data?.message || "Помилка реєстрації");
     }
   };
 
@@ -48,11 +43,14 @@ export default function Register() {
     <BackgroundWrapper>
       <div className="register-container">
         <BackButton />
-        <h2 className="page-title">Реєстрація</h2>
+        <h2 className="page-title">
+          <UserPlus size={22} style={{ marginRight: 8 }} />
+          Реєстрація
+        </h2>
 
         <form onSubmit={handleSubmit} className="register-form">
           <div className="input-wrapper">
-            <FaEnvelope className="input-icon" />
+            <Mail className="input-icon" size={18} />
             <input
               type="email"
               placeholder="Ваш email"
@@ -63,7 +61,7 @@ export default function Register() {
           </div>
 
           <div className="input-wrapper">
-            <FaLock className="input-icon" />
+            <Lock className="input-icon" size={18} />
             <input
               type="password"
               placeholder="Ваш пароль"
@@ -74,8 +72,13 @@ export default function Register() {
           </div>
 
           <button type="submit">Зареєструватися</button>
-
           {message && <p className="register-message">{message}</p>}
+          <p className="auth-toggle">
+            Вже є акаунт?{" "}
+            <a href="/login" className="auth-link">
+              Увійдіть тут
+            </a>
+          </p>
         </form>
       </div>
     </BackgroundWrapper>

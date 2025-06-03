@@ -197,3 +197,33 @@
   font-size: 18px;
   font-weight: 700;
 }
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f2f2f2;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.checkbox-group input[type="checkbox"] {
+  accent-color: #207c65;
+  transform: scale(1.1);
+}
+
+.checkbox-group label:hover {
+  background-color: #e6f2ef;
+}

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Ruler, Weight, Cake, Venus, Dumbbell, Target } from "lucide-react"; // Іконки
+import { Ruler, Weight, Cake, Venus, Dumbbell, Target } from "lucide-react";
 import BackButton from "./BackButton";
 import BackgroundWrapper from "./components/BackgroundWrapper";
+import { allergenMap } from "./localization";
+
 import "./Profile.css";
 
 export default function Profile() {
@@ -13,22 +15,46 @@ export default function Profile() {
     gender: "",
     activity: "",
     goal: "",
+    allergies: "",
   });
 
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
   const [nutrition, setNutrition] = useState(null);
+  const [allergies, setAllergies] = useState([]);
 
   const token = localStorage.getItem("token");
 
-  // Завантажуємо профіль користувача при завантаженні сторінки
+  // Отримуємо профіль користувача при завантаженні сторінки
   useEffect(() => {
     async function fetchProfile() {
       try {
         const res = await axios.get("http://localhost:5000/api/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.data) setForm(res.data);
+        if (res.data) {
+          console.log("Отримано профіль з бекенду:", res.data);
+          console.log("Allergies з сервера:", res.data.allergies);
+
+          const { height, weight, age, gender, activity, goal, allergies } =
+            res.data;
+
+          setForm({
+            height,
+            weight,
+            age,
+            gender,
+            activity,
+            goal,
+            allergies,
+          });
+
+          if (typeof allergies === "string") {
+            setAllergies(allergies.split(",").map((a) => a.trim()));
+          } else {
+            setAllergies([]);
+          }
+        }
       } catch (err) {
         console.error(err);
       }
@@ -36,7 +62,7 @@ export default function Profile() {
     fetchProfile();
   }, [token]);
 
-  // Валідація введених даних
+  // Перевірка введених даних
   const validate = () => {
     const newErrors = {};
     if (!form.height || form.height <= 0)
@@ -50,7 +76,7 @@ export default function Profile() {
     return newErrors;
   };
 
-  // Обробник змін у полях
+  // Обробка зміни поля
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -60,19 +86,34 @@ export default function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setMessage("");
       return;
     }
 
+    const cleanedAllergies = allergies.filter(Boolean).join(",");
+    const updatedForm = {
+      ...form,
+      allergies: cleanedAllergies,
+    };
+
+    console.log("Збереження алергій:", allergies, "=>", cleanedAllergies);
+
+    console.log("Updated form для збереження:", updatedForm);
+
     try {
-      const res = await axios.post("http://localhost:5000/api/profile", form, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.post(
+        "http://localhost:5000/api/profile",
+        updatedForm,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       setMessage(res.data.message);
       setErrors({});
-
       const nutritionRes = await axios.get(
         "http://localhost:5000/api/calories",
         {
@@ -121,36 +162,73 @@ export default function Profile() {
                 Icon={Cake}
                 helper="Ваш повний вік у роках"
               />
+
+              {/* Селект зі значенням з бази + відображення перекладу */}
               <ProfileSelect
                 name="gender"
                 label="Стать"
                 value={form.gender}
                 onChange={handleChange}
-                options={["Чоловік", "Жінка"]}
+                options={[
+                  { value: "Male", label: "Чоловік" },
+                  { value: "Female", label: "Жінка" },
+                ]}
                 error={errors.gender}
                 Icon={Venus}
                 helper="Стать впливає на розрахунок калорійності"
               />
+
               <ProfileSelect
                 name="activity"
                 label="Рівень активності"
                 value={form.activity}
                 onChange={handleChange}
-                options={["Низький", "Середній", "Високий"]}
+                options={[
+                  { value: "Low", label: "Низький" },
+                  { value: "Medium", label: "Середній" },
+                  { value: "High", label: "Високий" },
+                ]}
                 error={errors.activity}
                 Icon={Dumbbell}
                 helper="Оберіть, наскільки Ви активні протягом дня"
               />
+
               <ProfileSelect
                 name="goal"
                 label="Ціль"
                 value={form.goal}
                 onChange={handleChange}
-                options={["Схуднути", "Підтримувати", "Набрати вагу"]}
+                options={[
+                  { value: "Lose", label: "Схуднути" },
+                  { value: "Maintain", label: "Підтримувати" },
+                  { value: "Gain", label: "Набрати вагу" },
+                ]}
                 error={errors.goal}
                 Icon={Target}
                 helper="Оберіть Вашу мету щодо ваги"
               />
+
+              <div className="input-group">
+                <label className="input-label">Алергії (опціонально):</label>
+                <div className="checkbox-group">
+                  {Object.entries(allergenMap).map(([key, label]) => (
+                    <label key={key}>
+                      <input
+                        type="checkbox"
+                        checked={allergies.includes(key)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAllergies([...allergies, key]);
+                          } else {
+                            setAllergies(allergies.filter((a) => a !== key));
+                          }
+                        }}
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </div>
 
               <button type="submit">Зберегти профіль</button>
               {message && <p className="profile-message">{message}</p>}
@@ -166,7 +244,7 @@ export default function Profile() {
                   <strong>Білки:</strong> {nutrition.protein} г
                 </p>
                 <p>
-                  <strong>Жири:</strong> {nutrition.fat} г
+                  <strong>Жири:</strong> {nutrition.fats} г
                 </p>
                 <p>
                   <strong>Вуглеводи:</strong> {nutrition.carbs} г
@@ -180,13 +258,11 @@ export default function Profile() {
   );
 }
 
-// Компонент для числових полів
 function ProfileField({ name, label, value, onChange, error, Icon, helper }) {
   return (
     <div className="input-group">
       <label className="input-label">
-        {Icon && <Icon className="inline-icon" />}
-        {label}
+        {Icon && <Icon className="inline-icon" />} {label}
         {helper && <span className="tooltip">{helper}</span>}
       </label>
       <div className="input-wrapper">
@@ -203,7 +279,6 @@ function ProfileField({ name, label, value, onChange, error, Icon, helper }) {
   );
 }
 
-// Компонент для селектів
 function ProfileSelect({
   name,
   label,
@@ -217,16 +292,15 @@ function ProfileSelect({
   return (
     <div className="input-group">
       <label className="input-label">
-        {Icon && <Icon className="inline-icon" />}
-        {label}
+        {Icon && <Icon className="inline-icon" />} {label}
         {helper && <span className="tooltip">{helper}</span>}
       </label>
       <div className="input-wrapper">
         <select name={name} value={value} onChange={onChange} required>
           <option value="">Оберіть...</option>
           {options.map((o) => (
-            <option key={o} value={o}>
-              {o}
+            <option key={o.value} value={o.value}>
+              {o.label}
             </option>
           ))}
         </select>

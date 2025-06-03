@@ -1,0 +1,87 @@
+.my-feedback {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+}
+
+.my-feedback h2 {
+  text-align: center;
+  color: #207c65;
+  font-size: 28px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.feedback-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feedback-list li {
+  background: #f9fdfc;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.user-message {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.date {
+  font-size: 14px;
+  color: #777;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.admin-reply {
+  background: #e0f4ec;
+  padding: 12px;
+  border-left: 4px solid #207c65;
+  border-radius: 8px;
+  color: #207c65;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.pending-reply {
+  font-style: italic;
+  color: #aaa;
+  margin-top: 10px;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  transition: transform 0.2s ease;
+}
+
+.delete-btn:hover {
+  transform: scale(1.05);
+  color: #c0392b;
+}

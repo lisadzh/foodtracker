@@ -265,3 +265,74 @@
 .fade-in {
   animation: fadeInUp 0.6s ease-in-out;
 }
+
+.weight-table button svg {
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.weight-table h3 button {
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 12px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.weight-table h3 button:hover {
+  background-color: #e0e0e0;
+}
+
+.sort-toggle-btn {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sort-toggle-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.weight-message {
+  text-align: center;
+  margin-top: 16px;
+  font-weight: 500;
+  color: #207c65;
+  background: #eaf6f2;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid #cbe7dc;
+  animation: fadeInUp 0.5s ease-in-out;
+}
+
+.weight-table input {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  width: 80px;
+}
+
+.weight-table button {
+  padding: 6px 10px;
+  margin-right: 6px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  background-color: #90c9b2;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.weight-table button:hover {
+  background-color: #7dbfa5;
+}

@@ -7,12 +7,18 @@ import Profile from "./Profile";
 import Dashboard from "./Dashboard";
 import Statistics from "./Statistics";
 import Weight from "./Weight";
+import FeedbackForm from "./FeedbackForm";
+import AdminFeedback from "./AdminFeedback";
+import MyFeedback from "./MyFeedback";
+import AdminFoods from "./AdminFoods";
 import backgroundImage from "./assets/images/background-pattern.png";
 import "./App.css";
 import { AuthProvider } from "./AuthContext";
 import Navbar from "./Navbar";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminDashboard from "./AdminDashboard";
+import { Navigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function App() {
   return (
@@ -31,10 +37,31 @@ function App() {
         <BrowserRouter>
           <Navbar />
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={
+                localStorage.getItem("token") ? (
+                  jwtDecode(localStorage.getItem("token")).role === "admin" ? (
+                    <Navigate to="/admin" />
+                  ) : (
+                    <Navigate to="/profile" />
+                  )
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute adminOnly>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/profile"
@@ -65,6 +92,31 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Weight />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/feedback"
+              element={
+                <ProtectedRoute>
+                  <FeedbackForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/admin/feedbacks" element={<AdminFeedback />} />
+            <Route
+              path="/my-feedbacks"
+              element={
+                <ProtectedRoute>
+                  <MyFeedback />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/foods"
+              element={
+                <ProtectedRoute>
+                  <AdminFoods />
                 </ProtectedRoute>
               }
             />

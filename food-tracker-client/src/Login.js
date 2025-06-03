@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, LogIn } from "lucide-react"; // 👈 додано LogIn
 import BackButton from "./BackButton";
 import BackgroundWrapper from "./components/BackgroundWrapper";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext"; // імпорт
+import { useAuth } from "./AuthContext";
 import { jwtDecode } from "jwt-decode";
 
 import "./Login.css";
@@ -14,8 +14,8 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const { login } = useAuth(); // доступ до login()
-  const navigate = useNavigate(); // для редиректу
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,9 +27,8 @@ export default function Login() {
 
       const decoded = jwtDecode(res.data.token);
       localStorage.setItem("role", decoded.role);
-
-      login(res.data.token); // записуємо токен через контекст
-      navigate("/"); // редирект на головну
+      login(res.data.token);
+      navigate("/");
     } catch (err) {
       setMessage(err.response?.data?.message || "Щось пішло не так");
     }
@@ -39,7 +38,10 @@ export default function Login() {
     <BackgroundWrapper>
       <div className="login-container">
         <BackButton />
-        <h2 className="page-title">Увійти</h2>
+        <h2 className="page-title">
+          <LogIn size={22} style={{ marginRight: 8 }} />
+          Увійти
+        </h2>
 
         <form onSubmit={handleLogin} className="login-form">
           <div className="input-wrapper">
@@ -66,6 +68,12 @@ export default function Login() {
 
           <button type="submit">Увійти</button>
           {message && <p className="login-message">{message}</p>}
+          <p className="auth-toggle">
+            Немає акаунта?{" "}
+            <a href="/register" className="auth-link">
+              Зареєструйтеся тут
+            </a>
+          </p>
         </form>
       </div>
     </BackgroundWrapper>

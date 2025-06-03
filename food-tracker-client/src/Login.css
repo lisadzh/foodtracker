@@ -101,3 +101,21 @@
   font-weight: 500;
   animation: fadeInUp 0.6s ease-in-out;
 }
+
+.auth-toggle {
+  margin-top: 16px;
+  font-size: 15px;
+  text-align: center;
+  color: #444;
+}
+
+.auth-link {
+  color: #207c65;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.auth-link:hover {
+  color: #135c49;
+}
