@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import "./Home.css";
 import backgroundImage from "./assets/images/background-pattern.png";
-import { useAuth } from "./AuthContext"; // Підключаємо контекст
+import { useAuth } from "../context/AuthContext"; // Підключаємо контекст
 
 export default function Home() {
   const { isLoggedIn, logout } = useAuth(); // Доступ до стану авторизації

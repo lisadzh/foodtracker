@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Mail, Lock, LogIn } from "lucide-react"; // 👈 додано LogIn
 import BackButton from "./BackButton";
-import BackgroundWrapper from "./components/BackgroundWrapper";
+import BackgroundWrapper from "../../components/BackgroundWrapper";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
 import "./Login.css";

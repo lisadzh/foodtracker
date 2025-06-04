@@ -9,7 +9,7 @@ import {
   FaEnvelope,
   FaTools, // для admin-панелі
 } from "react-icons/fa";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import "./Navbar.css"; // Стилі
 
 export default function Navbar() {

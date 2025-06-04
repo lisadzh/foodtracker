@@ -7,7 +7,7 @@ import {
   mealTypeMap,
   mealTypeReverseMap,
   allergenMap,
-} from "./localization";
+} from "../../utils/localization";
 
 import "./AdminFoods.css";
 

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Ruler, Weight, Cake, Venus, Dumbbell, Target } from "lucide-react";
 import BackButton from "./BackButton";
-import BackgroundWrapper from "./components/BackgroundWrapper";
-import { allergenMap } from "./localization";
+import BackgroundWrapper from "../../components/BackgroundWrapper";
+import { allergenMap } from "../../utils/localization";
 
 import "./Profile.css";
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import "./Dashboard.css";
 import BackButton from "./BackButton";
-import BackgroundWrapper from "./components/BackgroundWrapper";
+import BackgroundWrapper from "../../components/BackgroundWrapper";
 import {
   Pencil,
   Trash2,
@@ -20,7 +20,7 @@ import {
   mealTypeMap,
   mealTypeReverseMap,
   allergenMap,
-} from "./localization";
+} from "../../utils/localization";
 
 import { useRef } from "react";
 
